@@ -6,7 +6,7 @@ This is a RESTful API for a marketplace platform, where users can register, auth
 ## Features
 
 - User registration and authentication
-- JWT-Based authentication
+- JWT-based authentication
 - Refresh token rotation and logout
 - Product CRUD operations
 - Product ownership validation
@@ -17,7 +17,7 @@ This is a RESTful API for a marketplace platform, where users can register, auth
 - Runtime **Node.js**
 - Language **TypeScript**
 - Framework **Express 5**
-- Database **PostGreSQL**
+- Database **PostgreSQL**
 - Database driver **pg**
 - Authentication **JWT, bcrypt**
 - Configuration **dotenv**
@@ -27,17 +27,41 @@ This is a RESTful API for a marketplace platform, where users can register, auth
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/en/download)
-- [PostGreSQL](https://www.postgresql.org/download/)
+- [PostgreSQL](https://www.postgresql.org/download/)
 
 ### Installation
 
 1. Install required software
 2. Clone the repository. `git clone https://github.com/meipass/MarketPlace-RestAPI.git`
 3. Open shell in the project folder using `cd` command
-4. Run `npm install` to install all required packages and create package.json file
+4. Run `npm install` to install all required packages
+
+### Environment Variables
+
+`.env`
+| Variable | Description | Required |
+| --- | --- | --- |
+| PORT | Server port | Yes |
+| DB_HOST | PostgreSQL host | Yes |
+| DB_PORT | PostgreSQL port | Yes |
+| DB_NAME | Database name | Yes |
+| DB_USER | Database username | Yes |
+| DB_PASSWORD | Database password | Yes |
+| ACCESS_JWT_SECRET | Secret used to sign an user access token | Yes |
+| REFRESH_JWT_SECRET | Secret used to sign an user refresh token | Yes |
 
 ### Starting
 
 1. Open shell in the project folder using `cd` command
-2. Run `npm run dev`
-3. Done!
+2. Configure .env according to .env.example
+3. Run `npm run dev`
+4. Done!
+
+### API Documentation
+
+| Method | Endpoint | Description | Authentication |
+| --- | --- | --- | --- |
+| POST | /auth/register | Register a new user using email, login and password  | No |
+| POST | /auth/login | Login a user using email and password | No |
+| POST | /auth/refresh | Refresh access and refresh tokens using a valid refresh token | Refresh token required |
+| POST | /auth/logout | Logout by revoking the refresh token | Refresh token required |
