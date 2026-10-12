@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 import { type AuthPayload } from "../interfaces/authPayload.interface.js"
 import "dotenv/config"
 
-const ACCESS_JWT_SECRET = process.env.ACCESS_JWT_SECRET!
+const ACCESS_JWT_SECRET = process.env.ACCESS_JWT_SECRET
 const REFRESH_JWT_SECRET = process.env.REFRESH_JWT_SECRET
 
 export function generateAccessToken(payload: AuthPayload): string {

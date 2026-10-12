@@ -6,7 +6,12 @@ export async function createProduct(sellerId: number, title: string, description
     const result = await pool.query(
         `INSERT INTO products (seller_id, title, description, price, stock)
             VALUES ($1, $2, $3, $4, $5)
-            RETURNING *
+            RETURNING 
+                seller_id AS sellerId,
+                title,
+                description,
+                price,
+                stock
         `, [sellerId, title, description, price, stock]
     )
 
@@ -58,7 +63,7 @@ export async function getProductOwner(id: number): Promise<number | null> {
         `, [id]
     )
 
-    return result.rows[0] ?? null
+    return Number(result.rows[0]) ?? null
 }
 
 export async function changeProduct(id: number, title?: string, description?: string, price?: number, stock?: number): Promise<Product | null> {
@@ -70,8 +75,13 @@ export async function changeProduct(id: number, title?: string, description?: st
                 price = COALESCE($3, price),
                 stock = COALESCE($4, stock)
             WHERE id = $5 
-            RETURNING *
-        `
+            RETURNING 
+                seller_id AS sellerId,
+                title,
+                description, 
+                price,
+                stock
+        `, [title, description, price, stock, id]
     )
 
     return result.rows[0] ?? null

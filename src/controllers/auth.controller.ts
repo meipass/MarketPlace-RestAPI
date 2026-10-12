@@ -34,5 +34,5 @@ export async function loginController(req: Request, res: Response) {
         return res.status(401).json("Unauthorized")
     }
 
-    return res.status(200).json(tokens)
+    return res.status(201).json(tokens)
 }

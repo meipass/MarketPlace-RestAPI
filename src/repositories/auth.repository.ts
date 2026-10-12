@@ -70,8 +70,8 @@ export async function getAuthUser(email: string): Promise<AuthUser | null> {
 
 export async function saveRefreshToken(userId: number, token: string, expiresAt: Date) {
     await pool.query(
-        `INSERT INTO refresh_tokens 
-            VALUES (user_id, token_hash, expires_at)
+        `INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
+            VALUES ($1, $2, $3)
         `, [userId, token, expiresAt]
     )
 }

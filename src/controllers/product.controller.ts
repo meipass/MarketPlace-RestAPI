@@ -29,12 +29,12 @@ export async function getProductsController(req: Request, res: Response) {
 export async function getProductController(req: Request, res: Response) {
     const id = Number(req.params.id)
     if (!id || Number.isNaN(id) || id <= 0) {
-        return res.json(400).json("Incorrect id")
+        return res.status(400).json("Incorrect id")
     }
 
     const product = await productService.getProduct(id)
     if (!product) {
-        return res.json(404).json("Invalid product id")
+        return res.status(404).json("Invalid product id")
     }
 
     return res.status(200).json(product)
@@ -43,12 +43,16 @@ export async function getProductController(req: Request, res: Response) {
 export async function changeProductController(req: Request, res: Response) {
     const userId = req.user?.userId
     if (!userId) {
-        return res.json(400).json("Incorrect access token")
+        return res.status(400).json("Incorrect access token")
     }
     
     const productId = Number(req.params.id)
     if (!productId) {
-        return res.json(400).json("Incorrect product id")
+        return res.status(400).json("Incorrect product id")
+    }
+
+    if (productId < 0) {
+        return res.status(400).json("Incorrect product id")
     }
 
     const { title, description, price, stock } = req.body
@@ -61,15 +65,15 @@ export async function changeProductController(req: Request, res: Response) {
 export async function deleteProductController(req: Request, res: Response) {
     const userId = req.user?.userId
     if (!userId) {
-        return res.json(400).json("Incorrect access token")
+        return res.status(400).json("Incorrect access token")
     }
     
     const productId = Number(req.params.id)
     if (!productId) {
-        return res.json(400).json("Incorrect product id")
+        return res.status(400).json("Incorrect product id")
     }
 
-    await productService.changeProduct(productId, userId)
+    await productService.deleteProduct(productId, userId)
 
     return res.status(200).json("Successfully deleted")
 }

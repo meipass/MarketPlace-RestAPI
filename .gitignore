@@ -1,4 +1,3 @@
 src/.gitignore
 src/.env
 node_modules/
-.env.*

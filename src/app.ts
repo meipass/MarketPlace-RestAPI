@@ -29,3 +29,4 @@ app.get("/users/profile", authMiddleware, getMyProfileController)
 app.listen(PORT, () => {
   console.log(`MarketPlace API is started on port ${PORT}`)
 })
+

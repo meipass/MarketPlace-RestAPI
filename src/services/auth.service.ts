@@ -30,7 +30,7 @@ export async function loginUser(email: string, password: string): Promise<{acces
         throw new Error("Bad credentials")
     }
 
-    const isPasswordMatches = await bcrypt.compare(password, authUser.passwordHash)
+    const isPasswordMatches = await bcrypt.compare(password, authUser.password)
     if (!isPasswordMatches) {
         throw new Error("Bad credentials")
     }
