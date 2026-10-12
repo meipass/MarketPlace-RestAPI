@@ -14,14 +14,14 @@ This is a RESTful API for a marketplace platform, where users can register, auth
 
 ## Tech stack
 
-- Runtime **Node.js**
-- Language **TypeScript**
-- Framework **Express 5**
-- Database **PostgreSQL**
-- Database driver **pg**
-- Authentication **JWT, bcrypt**
-- Configuration **dotenv**
-- Development **tsx**
+- Runtime: **Node.js**
+- Language: **TypeScript**
+- Framework: **Express 5**
+- Database: **PostgreSQL**
+- Database driver: **pg**
+- Authentication: **JWT, bcrypt**
+- Configuration: **dotenv**
+- Development: **tsx**
 
 ## Getting started
 ### Prerequisites
@@ -35,6 +35,8 @@ This is a RESTful API for a marketplace platform, where users can register, auth
 2. Clone the repository. `git clone https://github.com/meipass/MarketPlace-RestAPI.git`
 3. Open shell in the project folder using `cd` command
 4. Run `npm install` to install all required packages
+5. Copy .env.example into .env
+6. Configure .env
 
 ### Environment Variables
 
@@ -47,13 +49,12 @@ This is a RESTful API for a marketplace platform, where users can register, auth
 | DB_NAME | Database name | Yes |
 | DB_USER | Database username | Yes |
 | DB_PASSWORD | Database password | Yes |
-| ACCESS_JWT_SECRET | Secret used to sign an user access token | Yes |
-| REFRESH_JWT_SECRET | Secret used to sign an user refresh token | Yes |
+| ACCESS_JWT_SECRET | Secret used to sign user access token | Yes |
+| REFRESH_JWT_SECRET | Secret used to sign user refresh token | Yes |
 
 ### Starting
 
 1. Open shell in the project folder using `cd` command
-2. Configure .env according to .env.example
 3. Run `npm run dev`
 4. Done!
 
@@ -61,7 +62,7 @@ This is a RESTful API for a marketplace platform, where users can register, auth
 
 | Method | Endpoint | Description | Authentication |
 | --- | --- | --- | --- |
-| POST | /auth/register | Register a new user using email, login and password  | No |
-| POST | /auth/login | Login a user using email and password | No |
+| POST | /auth/register | Register a new user with an email, login and password  | No |
+| POST | /auth/login | Authenticate a user | No |
 | POST | /auth/refresh | Refresh access and refresh tokens using a valid refresh token | Refresh token required |
 | POST | /auth/logout | Logout by revoking the refresh token | Refresh token required |
