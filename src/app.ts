@@ -6,8 +6,11 @@ import { authMiddleware, registerMiddleware } from "./middlewares/auth.middlewar
 import { registerController, logOutController, loginController } from "./controllers/auth.controller.js"
 import { refreshTokenController } from "./controllers/tokenRefresh.controller.js"
 import { getMyProfileController } from "./controllers/profile.controller.js";
-import { changeProductController, createProductController, deleteProductController, getProductController, getProductsController } from "./controllers/product.controller.js";
 import { errorHandler } from "./controllers/errorHandler.js";
+import { getProductsMiddleware } from "./middlewares/product.middleware.js";
+import { changeProductController, createProductController, 
+    deleteProductController, getProductController, 
+    getProductsController } from "./controllers/product.controller.js";
 
 const PORT = process.env.PORT
 
@@ -20,7 +23,7 @@ app.post("/auth/refresh", refreshTokenController)
 app.post("/auth/logout", logOutController)
 
 app.get("/products/:id", getProductController)
-app.get("/products", getProductsController)
+app.get("/products", getProductsMiddleware, getProductsController)
 app.post("/products", authMiddleware, createProductController)
 app.patch("/products/:id", authMiddleware, changeProductController)
 app.delete("/products/:id", authMiddleware, deleteProductController)

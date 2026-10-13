@@ -1,4 +1,5 @@
 import type { Response, Request } from "express"
+import type { QueryFilter } from "../interfaces/queryFilter.interface.js";
 import * as productService from "../services/product.service.js"
 
 export async function createProductController(req: Request, res: Response) {
@@ -14,14 +15,9 @@ export async function createProductController(req: Request, res: Response) {
 }
 
 export async function getProductsController(req: Request, res: Response) {
-    const page = Number(req.query.page)
-    const limit = Number(req.query.limit)
+    const queryFilter = res.locals.productFilters as QueryFilter
 
-    if (Number.isNaN(page) || page <= 0 || Number.isNaN(limit) || limit <= 0) {
-        return res.status(400).json("Incorrect page or limit")
-    }
-
-    const products = await productService.getProducts(page, limit)
+    const products = await productService.getProducts(queryFilter)
 
     return res.json(products)
 }
@@ -52,6 +48,10 @@ export async function changeProductController(req: Request, res: Response) {
     }
 
     if (productId < 0) {
+        return res.status(400).json("Incorrect product id")
+    }
+
+    if (!Number.isInteger(productId)) {
         return res.status(400).json("Incorrect product id")
     }
 

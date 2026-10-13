@@ -2,13 +2,14 @@ import type { PaginatedResult } from "../interfaces/paginatedResult.interface.js
 import type { Product } from "../interfaces/product.interface.js"
 import { AppError } from "../errors/AppError.js"
 import * as productRepository from "../repositories/product.repository.js"
+import type { QueryFilter } from "../interfaces/queryFilter.interface.js";
 
 export async function createProduct(sellerId: number, title: string, description: string, price: number, stock: number): Promise<Product | null> {
     return await productRepository.createProduct(sellerId, title, description, price, stock)
 }
 
-export async function getProducts(page?: number, limit?: number): Promise<PaginatedResult<Product>> {
-    return await productRepository.getProducts(page, limit)
+export async function getProducts(filters: QueryFilter): Promise<PaginatedResult<Product>> {
+    return await productRepository.getProducts(filters)
 }
 
 export async function getProduct(id: number): Promise<Product | null> {
