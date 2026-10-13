@@ -1,4 +1,6 @@
 import { type User } from "../interfaces/user.interface.js"
+import { AppError } from "../errors/AppError.js"
+import { withTransaction } from "../db/transaction.js";
 import * as tokens from "../utils/jwt.js"
 import * as bcrypt from "bcrypt"
 import * as authRepository from "../repositories/auth.repository.js"
@@ -6,19 +8,19 @@ import * as authRepository from "../repositories/auth.repository.js"
 export async function registerUser(email: string, login: string, password: string): Promise<User | null> {
     const isAlreadyRegistredLogin = await authRepository.findUserByLogin(login)
     if (isAlreadyRegistredLogin) {
-        throw new Error("Invalid credentials")
+        throw new AppError("Invalid credentials", 400)
     }
 
     const isAlreadyRegistredEmail = await authRepository.findUserByEmail(email)
     if (isAlreadyRegistredEmail) {
-        throw new Error("Invalid credentials")
+        throw new AppError("Invalid credentials", 400)
     }
 
     const passwordHashed = await bcrypt.hash(password, 10)
 
     const user = await authRepository.registerUser(email, login, passwordHashed)
     if (!user) {
-        throw new Error("Couldn't register a new user")
+        throw new AppError("Couldn't register a new user", 500)
     }
 
     return user
@@ -27,12 +29,12 @@ export async function registerUser(email: string, login: string, password: strin
 export async function loginUser(email: string, password: string): Promise<{accessToken: string, refreshToken: string} | null> {
     const authUser = await authRepository.getAuthUser(email)
     if (!authUser) {
-        throw new Error("Bad credentials")
+        throw new AppError("Bad credentials", 400)
     }
 
     const isPasswordMatches = await bcrypt.compare(password, authUser.password)
     if (!isPasswordMatches) {
-        throw new Error("Bad credentials")
+        throw new AppError("Bad credentials", 400)
     }
 
     const userId = authUser.id
@@ -67,29 +69,30 @@ export async function getMatchingTokenId(userId: number, refreshToken: string): 
 export async function logOutUser(refreshToken: string) {
     const payload = tokens.verifyRefreshToken(refreshToken)
     if (!payload) {
-        throw new Error("Invalid token")
+        throw new AppError("Invalid token", 400)
     }
 
     const tokenId = await getMatchingTokenId(payload.userId, refreshToken)
     if (tokenId === null) {
-        throw new Error("Invalid token") 
+        throw new AppError("Invalid token", 400) 
     }
 
-    await authRepository.revokeRefreshToken(tokenId)
+    const isRevoked = await authRepository.revokeRefreshToken(tokenId)
+    if (!isRevoked) {
+        throw new AppError("Invalid token", 400)
+    }
 }
 
 export async function refreshUserToken(refreshToken: string): Promise<{accessToken: string, refreshToken: string}> {
     const payload = tokens.verifyRefreshToken(refreshToken)
     if (!payload) {
-        throw new Error("Invalid token")
+        throw new AppError("Invalid token", 400)
     }
 
     const tokenId = await getMatchingTokenId(payload.userId, refreshToken)
     if (tokenId === null) {
-        throw new Error("Invalid token")
+        throw new AppError("Invalid token", 400)
     }
-
-    await authRepository.revokeRefreshToken(tokenId)
 
     const newRefreshToken = tokens.generateRefreshToken({
         userId: payload.userId
@@ -104,8 +107,14 @@ export async function refreshUserToken(refreshToken: string): Promise<{accessTok
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + 30)
 
-    // TODO: make an transation psql
-    await authRepository.saveRefreshToken(payload.userId, newRefreshTokenHash, expiresAt)
+    await withTransaction(async (client) => {
+        const revoked = await authRepository.revokeRefreshToken(tokenId, client)
+        if (!revoked) {
+            throw new AppError("Invalid token", 400)
+        }
+
+        await authRepository.saveRefreshToken(payload.userId, newRefreshTokenHash, expiresAt, client)
+    })
 
     return {
         accessToken: newAccessToken,

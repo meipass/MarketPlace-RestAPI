@@ -1,11 +1,15 @@
 import type { Response, Request } from "express"
 
 import * as authService from "../services/auth.service.js"
+import { validateRegistrationBody } from "../validators/auth.validator.js";
 
 export async function registerController(req: Request, res: Response) {
-    const { email, login, password } = req.body
+    const registrationBody = validateRegistrationBody(req.body)
+    if (!registrationBody) {
+        return res.status(400).json("Invalid credentials")
+    }
 
-    const user = await authService.registerUser(email, login, password)
+    const user = await authService.registerUser(registrationBody.email, registrationBody.login, registrationBody.password)
     if (!user) {
         return res.status(400).json("Cant register an user")
     }
@@ -23,7 +27,7 @@ export async function logOutController(req: Request, res: Response) {
 
     await authService.logOutUser(refreshToken)
 
-    return res.status(204).send()
+    return res.status(204).json("Successfully logged out")
 }
 
 export async function loginController(req: Request, res: Response) {

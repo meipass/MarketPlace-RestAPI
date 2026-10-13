@@ -1,4 +1,5 @@
 import { pool } from "../db/db.js"
+import { type PoolClient } from "pg"
 import { type RefreshToken } from "../interfaces/refreshToken.interface.js"
 import { type User } from "../interfaces/user.interface.js"
 import { type AuthUser } from "../interfaces/authUser.interface.js"
@@ -68,22 +69,28 @@ export async function getAuthUser(email: string): Promise<AuthUser | null> {
     return result.rows[0] ?? null
 }
 
-export async function saveRefreshToken(userId: number, token: string, expiresAt: Date) {
-    await pool.query(
+export async function saveRefreshToken(userId: number, token: string, expiresAt: Date, client?: PoolClient): Promise<void> {
+    const db = client ?? pool
+
+    await db.query(
         `INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
             VALUES ($1, $2, $3)
         `, [userId, token, expiresAt]
     )
 }
 
-export async function revokeRefreshToken(id: number) {
-    await pool.query(
+export async function revokeRefreshToken(id: number, client?: PoolClient): Promise<boolean> {
+    const db = client ?? pool
+
+    const result = await db.query(
         `UPDATE refresh_tokens 
             SET revoked_at = NOW()
             WHERE id = $1
                 AND revoked_at IS NULL
         `, [id]
     )
+
+    return result.rowCount === 1
 }
 
 export async function getActiveRefreshTokens(userId: number): Promise<RefreshToken[]> {

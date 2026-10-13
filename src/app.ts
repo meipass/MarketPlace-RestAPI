@@ -7,6 +7,7 @@ import { registerController, logOutController, loginController } from "./control
 import { refreshTokenController } from "./controllers/tokenRefresh.controller.js"
 import { getMyProfileController } from "./controllers/profile.controller.js";
 import { changeProductController, createProductController, deleteProductController, getProductController, getProductsController } from "./controllers/product.controller.js";
+import { errorHandler } from "./controllers/errorHandler.js";
 
 const PORT = process.env.PORT
 
@@ -24,9 +25,10 @@ app.post("/products", authMiddleware, createProductController)
 app.patch("/products/:id", authMiddleware, changeProductController)
 app.delete("/products/:id", authMiddleware, deleteProductController)
 
-app.get("/users/profile", authMiddleware, getMyProfileController)
+app.get("/users/me", authMiddleware, getMyProfileController)
+
+app.use(errorHandler)
 
 app.listen(PORT, () => {
   console.log(`MarketPlace API is started on port ${PORT}`)
 })
-

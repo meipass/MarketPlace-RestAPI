@@ -1,5 +1,6 @@
 import type { PaginatedResult } from "../interfaces/paginatedResult.interface.js";
 import type { Product } from "../interfaces/product.interface.js"
+import { AppError } from "../errors/AppError.js"
 import * as productRepository from "../repositories/product.repository.js"
 
 export async function createProduct(sellerId: number, title: string, description: string, price: number, stock: number): Promise<Product | null> {
@@ -21,12 +22,13 @@ export async function getProductOwner(id: number): Promise<number | null> {
 export async function changeProduct(id: number, userId: number, title?: string, description?: string, price?: number, stock?: number): Promise<Product | null> {
     const product = await getProduct(id)
     if (!product) {
-        throw new Error("Invalid product id")
+        throw new AppError("Invalid product id", 400)
     }
 
+    console.log(product.sellerId, userId, product)
     const isOwner = product.sellerId === userId
     if (!isOwner) {
-        throw new Error("Trying to change an product without ownership")
+        throw new AppError("Trying to change an product without ownership", 403)
     }
 
     const updatedProduct = await productRepository.changeProduct(id, title, description, price, stock)
@@ -37,12 +39,12 @@ export async function changeProduct(id: number, userId: number, title?: string, 
 export async function deleteProduct(id: number, userId: number) {
     const product = await getProduct(id)
     if (!product) {
-        throw new Error("Invalid product id")
+        throw new AppError("Invalid product id", 400)
     }
 
     const isOwner = product.sellerId === userId
     if (!isOwner) {
-        throw new Error("Trying to change an product without ownership")
+        throw new AppError("Trying to change an product without ownership", 403)
     }
 
     await productRepository.deleteProduct(id)

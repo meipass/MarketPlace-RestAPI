@@ -1,3 +1,2 @@
-src/.gitignore
-src/.env
+.env
 node_modules/
