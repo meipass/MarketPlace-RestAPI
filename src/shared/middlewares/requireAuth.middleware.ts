@@ -1,4 +1,4 @@
-import { verifyAccessToken } from "#app/utils/jwt";
+import * as tokenService from "#app/modules/tokens/tokens.service";
 import type { Response, Request, NextFunction } from "express";
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
@@ -11,7 +11,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     return;
   }
 
-  const payload = verifyAccessToken(accessToken);
+  const payload = tokenService.verifyAccessToken(accessToken);
   req.userId = payload.userId;
 
   next();

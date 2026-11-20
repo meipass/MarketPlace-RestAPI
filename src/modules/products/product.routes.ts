@@ -7,13 +7,16 @@ import {
   getProductsController,
 } from "./product.controller.js";
 import { getProductsMiddleware } from "./product.middleware.js";
+import { requireAuth } from "#app/shared/middlewares/requireAuth.middleware";
 
 const router = Router();
 
+router.use(requireAuth);
+
 router.get("/:id", getProductController);
 router.get("/", getProductsMiddleware, getProductsController);
-router.post("/", requireAuth, createProductController);
-router.patch("/:id", requireAuth, changeProductController);
-router.delete("/:id", requireAuth, deleteProductController);
+router.post("/", createProductController);
+router.patch("/:id", changeProductController);
+router.delete("/:id", deleteProductController);
 
 export default router;

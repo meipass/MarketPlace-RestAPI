@@ -1,12 +1,16 @@
 import { db } from "#app/db/db";
 import { tokensTable } from "#app/db/schema/tokens.schema";
+import type { Transaction } from "#app/interfaces/transaction.type";
 import { and, eq, gt, isNull } from "drizzle-orm";
 
 export async function saveRefreshToken(
   tokenHash: string,
   ownerId: number,
+  tx?: Transaction,
 ): Promise<boolean> {
-  const [result] = await db
+  const client = tx ?? db;
+
+  const [result] = await client
     .insert(tokensTable)
     .values({
       tokenHash,
@@ -20,8 +24,10 @@ export async function saveRefreshToken(
 export async function revokeRefreshToken(
   tokenHash: string,
   now: Date,
+  tx?: Transaction,
 ): Promise<boolean> {
-  const [result] = await db
+  const client = tx ?? db;
+  const [result] = await client
     .update(tokensTable)
     .set({
       revokedAt: now,
@@ -36,8 +42,11 @@ export async function revokeRefreshToken(
 
 export async function findRefreshToken(
   tokenHash: string,
+  tx?: Transaction,
 ): Promise<number | null> {
-  const [result] = await db
+  const client = tx ?? db;
+
+  const [result] = await client
     .select({
       ownerId: tokensTable.ownerId,
     })
