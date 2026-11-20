@@ -1,5 +1,5 @@
-export interface RegisterData {
-    email: string,
-    login: string,
-    password: string
+import type { LoginData } from "./loginData.type.js";
+
+export interface RegisterData extends LoginData {
+  login: string;
 }
