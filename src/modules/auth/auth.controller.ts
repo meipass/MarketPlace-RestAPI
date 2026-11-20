@@ -1,17 +1,12 @@
 import type { Response, Request } from "express";
 
 import * as authService from "./auth.service.js";
-import { validateRegistrationBody } from "#app/modules/auth/auth.validator";
 import { setAuthCookies } from "./auth.cookies.js";
 
 export async function registerController(req: Request, res: Response) {
-  const registrationBody = validateRegistrationBody(req.body);
+  const { email, login, password } = req.body;
 
-  const tokens = await authService.registerUser(
-    registrationBody.email,
-    registrationBody.login,
-    registrationBody.password,
-  );
+  const tokens = await authService.registerUser(email, login, password);
 
   setAuthCookies(res, tokens);
 
@@ -22,25 +17,19 @@ export async function registerController(req: Request, res: Response) {
 }
 
 export async function logOutController(req: Request, res: Response) {
-  const { refreshToken } = req.body;
-  if (!refreshToken) {
-    return res.status(400).json({
-      message: "Refresh token is required",
-    });
-  }
+  const refreshToken = req.cookies?.refreshToken;
 
   await authService.logOutUser(refreshToken);
-
-  return res.status(204).json("Successfully logged out");
+  return res.status(200).json("Successfully logged out");
 }
 
 export async function loginController(req: Request, res: Response) {
-  const { email, login, password } = req.body;
+  const { email, password } = req.body;
 
   const tokens = await authService.loginUser(email, password);
   if (!tokens) {
-    return res.status(401).json("Unauthorized");
+    return res.status(401).json("UNAUTHORIZED");
   }
 
-  return res.status(201).json(tokens);
+  return res.sendStatus(201);
 }
