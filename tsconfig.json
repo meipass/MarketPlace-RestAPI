@@ -15,6 +15,12 @@
     // "types": ["node"],
     // and npm install -D @types/node
 
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "paths": {
+        "*": ["./*"],
+        "#app/*": ["./src/*"]
+    }
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
@@ -40,5 +46,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+
+  "include": ["src/**/*.ts"]
 }
