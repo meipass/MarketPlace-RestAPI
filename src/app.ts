@@ -1,37 +1,18 @@
-import express from "express"
-import "dotenv/config"
+import express from "express";
+import "dotenv/config";
+import { errorHandler } from "./modules/appError/appError.controller.js";
 
-import { authMiddleware, registerMiddleware } from "./middlewares/auth.middleware.js"
+const PORT = process.env.PORT;
 
-import { registerController, logOutController, loginController } from "./controllers/auth.controller.js"
-import { refreshTokenController } from "./controllers/tokenRefresh.controller.js"
-import { getMyProfileController } from "./controllers/profile.controller.js";
-import { errorHandler } from "./controllers/errorHandler.js";
-import { getProductsMiddleware } from "./middlewares/product.middleware.js";
-import { changeProductController, createProductController, 
-    deleteProductController, getProductController, 
-    getProductsController } from "./controllers/product.controller.js";
+const app = express();
 
-const PORT = process.env.PORT
+app.use(errorHandler);
+app.use(express.json());
 
-const app = express()
-app.use(express.json())
+app.get("/users/me", authMiddleware, getMyProfileController);
 
-app.post("/auth/register", registerMiddleware, registerController)
-app.post("/auth/login", registerMiddleware, loginController)
-app.post("/auth/refresh", refreshTokenController)
-app.post("/auth/logout", logOutController)
-
-app.get("/products/:id", getProductController)
-app.get("/products", getProductsMiddleware, getProductsController)
-app.post("/products", authMiddleware, createProductController)
-app.patch("/products/:id", authMiddleware, changeProductController)
-app.delete("/products/:id", authMiddleware, deleteProductController)
-
-app.get("/users/me", authMiddleware, getMyProfileController)
-
-app.use(errorHandler)
+app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`MarketPlace API is started on port ${PORT}`)
-})
+  console.log(`MarketPlace API is started on port ${PORT}`);
+});

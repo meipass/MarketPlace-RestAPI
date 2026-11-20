@@ -1,0 +1,115 @@
+import { AppError } from "#app/modules/appError/appError.class";
+import * as bcrypt from "bcrypt";
+import * as tokenService from "#app/modules/tokens/tokens.service";
+import * as userService from "#app/modules/users/user.service";
+import type { Tokens } from "#app/interfaces/tokens.type";
+import { db } from "#app/db/db";
+
+export async function registerUser(
+  email: string,
+  login: string,
+  password: string,
+): Promise<Tokens> {
+  const result = await db.transaction(async (tx) => {
+    const isAlreadyTakenLogin = await userService.findByLogin(login);
+    if (isAlreadyTakenLogin) {
+      throw new AppError("INVALID_CREDENTIALS");
+    }
+
+    const isAlreadyTakenEmail = await userService.findByEmail(email);
+    if (isAlreadyTakenEmail) {
+      throw new AppError("INVALID_CREDENTIALS");
+    }
+
+    const passwordHashed = await bcrypt.hash(password, 10);
+
+    const userId = await userService.create(email, login, passwordHashed);
+    if (!userId) {
+      throw new AppError("Couldn't register a new user", 500);
+    }
+
+    const accessToken = tokenService.generateAccessToken({ userId });
+    const refreshToken = tokenService.generateRefreshToken();
+    const hashedRefreshToken = tokenService.hashRefreshToken(refreshToken);
+
+    await tokenService.saveRefreshToken(hashedRefreshToken, userId, tx);
+
+    return {
+      access: accessToken,
+      refresh: hashedRefreshToken,
+    };
+  });
+
+  return result;
+}
+
+export async function loginUser(
+  email: string,
+  password: string,
+): Promise<Tokens> {
+  const authUser = await userService.getAuthData(email);
+  if (!authUser) {
+    throw new AppError("Bad credentials", 400);
+  }
+
+  const isPasswordMatches = await bcrypt.compare(
+    password,
+    authUser.passwordHash,
+  );
+  if (!isPasswordMatches) {
+    throw new AppError("Bad credentials", 400);
+  }
+
+  const userId = authUser.id;
+  const accessToken = tokenService.generateAccessToken({ userId: userId });
+  const refreshToken = tokenService.generateRefreshToken();
+
+  const refreshTokenHash = await bcrypt.hash(refreshToken, 10);
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 30);
+
+  const isSaved = await tokenService.saveRefreshToken(
+    refreshTokenHash,
+    authUser.id,
+  );
+  if (!isSaved) {
+    throw new AppError("UNKNOWN_SERVER_ERROR");
+  }
+
+  return {
+    access: accessToken,
+    refresh: refreshToken,
+  };
+}
+
+export async function logOutUser(refreshToken: string) {
+  const hashedRefreshToken = tokenService.hashRefreshToken(refreshToken);
+
+  await db.transaction(async (tx) => {
+    const userId = tokenService.findRefreshToken(hashedRefreshToken, tx);
+    if (!userId) {
+      throw new AppError("Invalid token", 400);
+    }
+
+    const isRevoked = await tokenService.revokeRefreshToken(
+      hashedRefreshToken,
+      tx,
+    );
+    if (!isRevoked) {
+      throw new AppError("Invalid token", 400);
+    }
+  });
+}
+
+export async function refreshUserToken(refreshToken: string): Promise<Tokens> {
+  const rotateResult = await tokenService.rotateRefreshToken(refreshToken);
+  const accessToken = tokenService.generateAccessToken({
+    userId: rotateResult.userId,
+  });
+
+  return {
+    access: accessToken,
+    refresh: rotateResult.newRefreshToken,
+  };
+}
