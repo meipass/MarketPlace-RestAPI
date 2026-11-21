@@ -1,9 +1,9 @@
 import { db } from "#app/db/db";
 import { productsTable } from "#app/db/schema/products.schema";
+import { and, asc, count, desc, eq, gte, ilike, lte } from "drizzle-orm";
+import type { QueryFilter } from "#app/interfaces/queryFilter.type";
 import type { PaginatedResult } from "#app/interfaces/paginatedResult.type";
 import type { Product } from "#app/interfaces/product.type";
-import type { QueryFilter } from "#app/interfaces/queryFilter.type";
-import { and, asc, count, desc, eq, gte, ilike, lte } from "drizzle-orm";
 
 export async function createProduct(
   sellerId: number,
@@ -12,9 +12,6 @@ export async function createProduct(
   price: number,
   stock: number,
 ): Promise<Product | null> {
-  price = Number(price) || 1;
-  stock = Number(stock) || 0;
-
   const [product] = await db
     .insert(productsTable)
     .values({

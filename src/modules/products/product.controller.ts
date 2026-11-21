@@ -1,16 +1,12 @@
 import type { Response, Request } from "express";
-import type { QueryFilter } from "../interfaces/queryFilter.interface.js";
-import * as productService from "../services/product.service.js";
+import type { QueryFilter } from "#app/interfaces/queryFilter.type";
+import * as productService from "./product.service.js";
 
 export async function createProductController(req: Request, res: Response) {
-  if (!req.user) {
-    return res.status(401).json("Unauthorized");
-  }
-
   const { title, description, price, stock } = req.body;
 
   const product = await productService.createProduct(
-    req.user.userId,
+    req.userId!,
     title,
     description,
     price,
@@ -22,10 +18,12 @@ export async function createProductController(req: Request, res: Response) {
 
 export async function getProductsController(req: Request, res: Response) {
   const queryFilter = res.locals.productFilters as QueryFilter;
-
   const products = await productService.getProducts(queryFilter);
 
-  return res.json(products);
+  return res.status(200).json({
+    status: "success",
+    products,
+  });
 }
 
 export async function getProductController(req: Request, res: Response) {
@@ -43,11 +41,6 @@ export async function getProductController(req: Request, res: Response) {
 }
 
 export async function changeProductController(req: Request, res: Response) {
-  const userId = req.user?.userId;
-  if (!userId) {
-    return res.status(400).json("Incorrect access token");
-  }
-
   const productId = Number(req.params.id);
   if (!productId) {
     return res.status(400).json("Incorrect product id");
@@ -65,28 +58,41 @@ export async function changeProductController(req: Request, res: Response) {
 
   const changedProduct = await productService.changeProduct(
     productId,
-    userId,
+    req.userId!,
     title,
     description,
     price,
     stock,
   );
 
+  if (!changedProduct) {
+    res.status(500).json({
+      status: "error",
+      message: "UNKNOWN_SERVER_ERROR",
+    });
+    return;
+  }
+
   return res.json(changedProduct);
 }
 
 export async function deleteProductController(req: Request, res: Response) {
-  const userId = req.user?.userId;
-  if (!userId) {
-    return res.status(400).json("Incorrect access token");
-  }
-
   const productId = Number(req.params.id);
   if (!productId) {
     return res.status(400).json("Incorrect product id");
   }
 
-  await productService.deleteProduct(productId, userId);
+  const isDeleted = await productService.deleteProduct(productId, req.userId!);
+  if (!isDeleted) {
+    res.status(500).json({
+      status: "error",
+      message: "UNKNOWN_SERVER_ERROR",
+    });
+    return;
+  }
 
-  return res.status(200).json("Successfully deleted");
+  return res.status(200).json({
+    status: "success",
+    message: "SUCCESSFULLY_DELETED_PRODUCT",
+  });
 }

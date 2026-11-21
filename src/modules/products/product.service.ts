@@ -34,7 +34,7 @@ export function getProductOwner(id: number): Promise<number | null> {
   return productRepository.getProductOwner(id);
 }
 
-export async function changeProduct(
+export function changeProduct(
   id: number,
   userId: number,
   title?: string,
@@ -42,17 +42,7 @@ export async function changeProduct(
   price?: number,
   stock?: number,
 ): Promise<boolean> {
-  const product = await getProduct(id);
-  if (!product) {
-    throw new AppError("Invalid product id", 400);
-  }
-
-  const isOwner = product.sellerId === userId;
-  if (!isOwner) {
-    throw new AppError("Trying to change an product without ownership", 403);
-  }
-
-  const isUpdated = await productRepository.changeProduct(
+  return productRepository.changeProduct(
     id,
     userId,
     title,
@@ -60,8 +50,6 @@ export async function changeProduct(
     price,
     stock,
   );
-
-  return isUpdated;
 }
 
 export async function deleteProduct(
