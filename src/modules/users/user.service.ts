@@ -1,6 +1,7 @@
 import type { AuthUser } from "#app/interfaces/authUser.type";
 import type { Transaction } from "#app/interfaces/transaction.type";
 import type { User } from "#app/interfaces/user.type";
+
 import * as userRepository from "./user.repository.js";
 
 export function create(
@@ -38,4 +39,8 @@ export function getAuthData(
   tx?: Transaction,
 ): Promise<AuthUser | null> {
   return userRepository.getAuthData(email, tx);
+}
+
+export function getMyProfile(userId: number): Promise<User | null> {
+  return findById(userId);
 }

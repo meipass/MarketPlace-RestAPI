@@ -1,11 +1,12 @@
 import { createHash, randomBytes } from "node:crypto";
-import jwt from "jsonwebtoken";
-import * as tokenRepository from "./tokens.repository.js";
 import type { RotateRefreshTokenResult } from "#app/interfaces/rotateRefreshTokenResult.type";
 import type { AuthPayload } from "#app/interfaces/authPayload.type";
-import { AppError } from "#app/modules/appError/appError.class";
 import type { Transaction } from "#app/interfaces/transaction.type";
+import { AppError } from "#app/modules/appError/appError.class";
 import { db } from "#app/db/db";
+import jwt from "jsonwebtoken";
+
+import * as tokenRepository from "./tokens.repository.js";
 
 const ACCESS_JWT_SECRET = process.env.ACCESS_JWT_SECRET!;
 

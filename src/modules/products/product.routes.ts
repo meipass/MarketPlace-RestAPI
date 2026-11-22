@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import {
   changeProductController,
   createProductController,
@@ -6,11 +7,13 @@ import {
   getProductController,
   getProductsController,
 } from "./product.controller.js";
+
 import {
   createProductMiddleware,
   getProductMiddleware,
   getProductsMiddleware,
 } from "./product.middleware.js";
+
 import { requireAuth } from "#app/shared/middlewares/requireAuth.middleware";
 
 const router = Router();

@@ -1,7 +1,7 @@
 import { db } from "#app/db/db";
 import { tokensTable } from "#app/db/schema/tokens.schema";
-import type { Transaction } from "#app/interfaces/transaction.type";
 import { and, eq, gt, isNull } from "drizzle-orm";
+import type { Transaction } from "#app/interfaces/transaction.type";
 
 export async function saveRefreshToken(
   tokenHash: string,
