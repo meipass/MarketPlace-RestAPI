@@ -8,7 +8,7 @@ The project follows a layered architecture that separates HTTP handling, busines
 ## Features
 
 - **Authentication** — user registration and login using email and password.
-- **JWT authentication** — access tokens for protected endpoints.
+- **HttpOnly cookie based authentication** — securely store authentication tokens in HttpOnly cookies to prevent client-side JavaScript from accessing them (XSS attacks).
 - **Refresh token rotation** — issue new access and refresh tokens while revoking the previous refresh token.
 - **Session revocation** — invalidate refresh tokens on logout.
 - **Password hashing** — bcrypt password hashing.
@@ -96,26 +96,26 @@ Configure the environment variables and make sure PostgreSQL is running.
 
 | Method | Endpoint | Description | Authentication |
 | --- | --- | --- | --- |
-| POST | `/auth/register` | Register a new user | No |
-| POST | `/auth/login` | Authenticate a user and receive tokens | No |
-| POST | `/auth/refresh` | Refresh access and refresh tokens | Refresh token in body |
-| POST | `/auth/logout` | Revoke a refresh token | Refresh token in body |
+| POST | `/auth/register` | Register a new user | None |
+| POST | `/auth/login` | Authenticate a user and receive tokens | None |
+| POST | `/auth/refresh` | Refresh access and refresh tokens | Refresh token in cookie |
+| POST | `/auth/logout` | Revoke a refresh token | refresh token cookie |
 
 #### Users
 
 | Method | Endpoint | Description | Authentication |
 | --- | --- | --- | --- |
-| GET | `/users/me` | Get the authenticated user's profile | Access token |
+| GET | `/users/me` | Get the authenticated user's profile | Access token in cookie |
 
 #### Products
 
 | Method | Endpoint | Description | Authentication |
 | --- | --- | --- | --- |
-| GET | `/products` | Get a paginated list of products with filtering and sorting | No |
-| GET | `/products/:id` | Get a product by ID | No |
-| POST | `/products` | Create a new product listing | Access token |
-| PATCH | `/products/:id` | Update an existing product listing | Access token |
-| DELETE | `/products/:id` | Delete a product listing | Access token |
+| GET | `/products` | Get a paginated list of products with filtering and sorting | None |
+| GET | `/products/:id` | Get a product by ID | None |
+| POST | `/products` | Create a new product listing | Access token in cookie |
+| PATCH | `/products/:id` | Update an existing product listing | Access token in cookie |
+| DELETE | `/products/:id` | Delete a product listing | Access token in cookie |
 
 ## License
 
