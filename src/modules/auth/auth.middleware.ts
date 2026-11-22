@@ -1,9 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
+import { isNonEmptyString } from "#app/validators/isNonEmptyString.validator";
 import {
   validateRegistrationBody,
   validateLoginBody,
 } from "./auth.validator.js";
-import { isNonEmptyString } from "#app/validators/isNonEmptyString.validator";
 
 export function registerMiddleware(
   req: Request,

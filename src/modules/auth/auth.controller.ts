@@ -16,13 +16,6 @@ export async function registerController(req: Request, res: Response) {
   });
 }
 
-export async function logOutController(req: Request, res: Response) {
-  const refreshToken = req.cookies?.refreshToken;
-
-  await authService.logOutUser(refreshToken);
-  return res.status(200).json("Successfully logged out");
-}
-
 export async function loginController(req: Request, res: Response) {
   const { email, password } = req.body;
 
@@ -32,4 +25,25 @@ export async function loginController(req: Request, res: Response) {
   }
 
   return res.sendStatus(201);
+}
+
+export async function logOutController(req: Request, res: Response) {
+  const refreshToken = req.cookies?.refreshToken;
+
+  await authService.logOutUser(refreshToken);
+
+  return res.status(200).json("Successfully logged out");
+}
+
+export async function refreshTokenController(req: Request, res: Response) {
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
+    return res.status(400).json({
+      message: "Refresh token is required",
+    });
+  }
+
+  const result = await authService.refreshUserTokens(refreshToken);
+
+  return res.status(200).json(result);
 }

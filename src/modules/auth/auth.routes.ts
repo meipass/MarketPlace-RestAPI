@@ -2,16 +2,16 @@ import { Router } from "express";
 import {
   loginController,
   logOutController,
+  refreshTokenController,
   registerController,
 } from "./auth.controller.js";
-import { refreshTokenController } from "#app/controllers/tokenRefresh.controller";
 import { loginMiddleware, registerMiddleware } from "./auth.middleware.js";
 
 const router = Router();
 
-router.post("/auth/register", registerMiddleware, registerController);
-router.post("/auth/login", loginMiddleware, loginController);
-router.post("/auth/refresh", refreshTokenController);
-router.post("/auth/logout", logOutController);
+router.post("/register", registerMiddleware, registerController);
+router.post("/login", loginMiddleware, loginController);
+router.post("/refresh", refreshTokenController);
+router.post("/logout", logOutController);
 
 export default router;

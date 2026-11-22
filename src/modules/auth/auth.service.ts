@@ -102,7 +102,7 @@ export async function logOutUser(refreshToken: string) {
   });
 }
 
-export async function refreshUserToken(refreshToken: string): Promise<Tokens> {
+export async function refreshUserTokens(refreshToken: string): Promise<Tokens> {
   const rotateResult = await tokenService.rotateRefreshToken(refreshToken);
   const accessToken = tokenService.generateAccessToken({
     userId: rotateResult.userId,
