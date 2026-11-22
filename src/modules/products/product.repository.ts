@@ -99,7 +99,9 @@ export async function getProductOwner(id: number): Promise<number | null> {
     .from(productsTable)
     .where(eq(productsTable.id, id));
 
-  return Number(product?.sellerId) ?? null;
+  return Number.isNaN(Number(product?.sellerId))
+    ? null
+    : Number(product?.sellerId);
 }
 
 export async function changeProduct(

@@ -6,7 +6,6 @@ import type { AuthPayload } from "#app/interfaces/authPayload.type";
 import { AppError } from "#app/modules/appError/appError.class";
 import type { Transaction } from "#app/interfaces/transaction.type";
 import { db } from "#app/db/db";
-import type { Tokens } from "#app/interfaces/tokens.type";
 
 const ACCESS_JWT_SECRET = process.env.ACCESS_JWT_SECRET!;
 

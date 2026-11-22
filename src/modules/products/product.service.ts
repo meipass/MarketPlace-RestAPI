@@ -1,6 +1,5 @@
 import type { PaginatedResult } from "#app/interfaces/paginatedResult.type";
 import type { Product } from "#app/interfaces/product.type";
-import { AppError } from "#app/modules/appError/appError.class";
 import * as productRepository from "#app/modules/products/product.repository";
 import type { QueryFilter } from "#app/interfaces/queryFilter.type";
 
