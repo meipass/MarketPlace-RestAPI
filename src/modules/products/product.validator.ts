@@ -25,7 +25,7 @@ export function parsePositiveInteger(
   return parsed;
 }
 
-function parsePrice(value: unknown): number | null {
+function parsePrice(value: unknown): number | null | undefined {
   if (value === undefined) return null;
   if (typeof value !== "string" || value.trim() === "") return null;
 
