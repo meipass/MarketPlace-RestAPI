@@ -1,9 +1,11 @@
 import { AppError } from "#app/modules/appError/appError.class";
+import { db } from "#app/db/db";
+
+import type { Tokens } from "#app/interfaces/tokens.type";
+
 import * as bcrypt from "bcrypt";
 import * as tokenService from "#app/modules/tokens/tokens.service";
 import * as userService from "#app/modules/users/user.service";
-import type { Tokens } from "#app/interfaces/tokens.type";
-import { db } from "#app/db/db";
 
 export async function registerUser(
   email: string,
@@ -25,7 +27,7 @@ export async function registerUser(
 
     const userId = await userService.create(email, login, passwordHashed);
     if (!userId) {
-      throw new AppError("Couldn't register a new user", 500);
+      throw new AppError("UNKNOWN_SERVER_ERROR");
     }
 
     const accessToken = tokenService.generateAccessToken({ userId });
@@ -49,7 +51,7 @@ export async function loginUser(
 ): Promise<Tokens> {
   const authUser = await userService.getAuthData(email);
   if (!authUser) {
-    throw new AppError("Bad credentials", 400);
+    throw new AppError("INVALID_CREDENTIALS");
   }
 
   const isPasswordMatches = await bcrypt.compare(
@@ -57,14 +59,14 @@ export async function loginUser(
     authUser.passwordHash,
   );
   if (!isPasswordMatches) {
-    throw new AppError("Bad credentials", 400);
+    throw new AppError("INVALID_CREDENTIALS");
   }
 
   const userId = authUser.id;
   const accessToken = tokenService.generateAccessToken({ userId: userId });
   const refreshToken = tokenService.generateRefreshToken();
 
-  const refreshTokenHash = await bcrypt.hash(refreshToken, 10);
+  const refreshTokenHash = await bcrypt.hash(refreshToken);
 
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 30);
@@ -89,7 +91,7 @@ export async function logOutUser(refreshToken: string) {
   await db.transaction(async (tx) => {
     const userId = tokenService.findRefreshToken(hashedRefreshToken, tx);
     if (!userId) {
-      throw new AppError("Invalid token", 400);
+      throw new AppError("INVALID_TOKEN");
     }
 
     const isRevoked = await tokenService.revokeRefreshToken(
@@ -97,7 +99,7 @@ export async function logOutUser(refreshToken: string) {
       tx,
     );
     if (!isRevoked) {
-      throw new AppError("Invalid token", 400);
+      throw new AppError("INVALID_TOKEN");
     }
   });
 }
