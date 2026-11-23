@@ -2,12 +2,14 @@ import type {
   QueryFilter,
   SortBy,
   SortOrder,
-} from "#app/interfaces/queryFilter.type";
+} from "#app/interfaces/search/queryFilter.type";
+
+import type { ProductData } from "#app/interfaces/products/productData.type";
+
 import { isObject } from "#app/validators/isObject.validator";
-import { AppError } from "#app/modules/appError/appError.class";
 import { isValidInteger } from "#app/validators/isValidNumber.validator";
-import type { ProductData } from "#app/interfaces/productData.type";
 import { isNonEmptyString } from "#app/validators/isNonEmptyString.validator";
+import { AppError } from "#app/modules/appError/appError.class";
 
 export function parsePositiveInteger(
   value: unknown,
@@ -62,52 +64,30 @@ export function validateFilters(query: unknown): QueryFilter {
 
   if (page === null || limit === null) {
     throw new AppError("INVALID_SEARCH_LIMITS");
-    // return res.status(400).json({
-    //   error:
-    //     "Page must be a positive integer and limit must be between 1 and 100",
-    // });
   }
 
   if (minPrice === null || maxPrice === null) {
     throw new AppError("INVALID_SEARCH_PRICES");
-    // return res.status(400).json({
-    //   error: "Prices must be non-negative numbers",
-    // });
   }
 
   if (minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice) {
     throw new AppError("SEARCH_MIN_PRICE_EXCEEDS_MAX");
-    // return res.status(400).json({
-    //   error: "Minimum price cannot exceed maximum price",
-    // });
   }
 
   if (search !== undefined && typeof search !== "string") {
     throw new AppError("SEARCH_MUST_BE_STRING");
-    // return res.status(400).json({
-    //   error: "Search must be a string",
-    // });
   }
 
   if (typeof search === "string" && search.length > 70) {
     throw new AppError("SEARCH_EXCEEDS_LIMIT");
-    // return res.status(400).json({
-    //   error: "Search cannot exceed 70 characters",
-    // });
   }
 
   if (sortBy !== undefined && !isSortBy(sortBy)) {
     throw new AppError("SEARCH_INVALID_SORT_BY");
-    // return res.status(400).json({
-    //   error: "sortBy must be price or title",
-    // });
   }
 
   if (order !== undefined && !isSortOrder(order)) {
     throw new AppError("SEARCH_INVALID_SORT_ORDER");
-    // return res.status(400).json({
-    //   error: "sortOrder must be asc or desc",
-    // });
   }
 
   const validatedSortBy: SortBy = isSortBy(sortBy) ? sortBy : "price";
@@ -142,7 +122,6 @@ export function validateProductId(params: unknown) {
 }
 
 export function validateProductData(body: unknown): ProductData {
-  // const { title, description, price, stock } = req.body;
   if (!isObject(body)) {
     throw new AppError("INVALID_BODY");
   }

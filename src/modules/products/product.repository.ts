@@ -1,11 +1,11 @@
 import { db } from "#app/db/db";
 import { productsTable } from "#app/db/schema/products.schema";
-import { and, asc, count, desc, eq, gte, ilike, lte } from "drizzle-orm";
-import type { QueryFilter } from "#app/interfaces/queryFilter.type";
-import type { PaginatedResult } from "#app/interfaces/paginatedResult.type";
-import type { Product } from "#app/interfaces/product.type";
+import { and, asc, count, desc, eq, gte, ilike, lte, sql } from "drizzle-orm";
+import type { QueryFilter } from "#app/interfaces/search/queryFilter.type";
+import type { PaginatedResult } from "#app/interfaces/search/paginatedResult.type";
+import type { Product } from "#app/interfaces/products/product.type";
 
-export async function createProduct(
+export async function create(
   sellerId: number,
   title: string,
   description: string,
@@ -35,7 +35,7 @@ export async function createProduct(
   return product ?? null;
 }
 
-export async function getProducts(
+export async function getMany(
   filters: QueryFilter,
 ): Promise<PaginatedResult<Product>> {
   const conditions = [];
@@ -84,7 +84,7 @@ export async function getProducts(
   };
 }
 
-export async function getProduct(id: number): Promise<Product | null> {
+export async function get(id: number): Promise<Product | null> {
   const [product] = await db
     .select()
     .from(productsTable)
@@ -93,7 +93,7 @@ export async function getProduct(id: number): Promise<Product | null> {
   return product ?? null;
 }
 
-export async function getProductOwner(id: number): Promise<number | null> {
+export async function getOwner(id: number): Promise<number | null> {
   const [product] = await db
     .select({ sellerId: productsTable.sellerId })
     .from(productsTable)
@@ -104,7 +104,7 @@ export async function getProductOwner(id: number): Promise<number | null> {
     : Number(product?.sellerId);
 }
 
-export async function changeProduct(
+export async function change(
   id: number,
   userId: number,
   title?: string,
@@ -126,13 +126,53 @@ export async function changeProduct(
   return success !== undefined;
 }
 
-export async function deleteProduct(
-  id: number,
-  userId: number,
-): Promise<boolean> {
+export async function remove(id: number, userId: number): Promise<boolean> {
   const [success] = await db
     .delete(productsTable)
     .where(and(eq(productsTable.id, id), eq(productsTable.sellerId, userId)))
+    .returning({ id: productsTable.id });
+
+  return success !== undefined;
+}
+
+export async function changeStock(
+  userId: number,
+  id: number,
+  newStock: number,
+) {
+  await db
+    .update(productsTable)
+    .set({
+      stock: newStock,
+    })
+    .where(and(eq(productsTable.id, id), eq(productsTable.sellerId, userId)));
+}
+
+export async function increaseStock(
+  id: number,
+  quantity: number,
+): Promise<boolean> {
+  const [success] = await db
+    .update(productsTable)
+    .set({
+      stock: sql`${productsTable.stock} + ${quantity}`,
+    })
+    .where(eq(productsTable.id, id))
+    .returning({ id: productsTable.id });
+
+  return success !== undefined;
+}
+
+export async function decreaseStock(
+  id: number,
+  quantity: number,
+): Promise<boolean> {
+  const [success] = await db
+    .update(productsTable)
+    .set({
+      stock: sql`${productsTable.stock} - ${quantity}`,
+    })
+    .where(and(gte(productsTable.stock, quantity), eq(productsTable.id, id)))
     .returning({ id: productsTable.id });
 
   return success !== undefined;

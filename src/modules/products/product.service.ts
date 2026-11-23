@@ -1,39 +1,34 @@
-import type { PaginatedResult } from "#app/interfaces/paginatedResult.type";
-import type { Product } from "#app/interfaces/product.type";
-import * as productRepository from "#app/modules/products/product.repository";
-import type { QueryFilter } from "#app/interfaces/queryFilter.type";
+import type { PaginatedResult } from "#app/interfaces/search/paginatedResult.type";
+import type { Product } from "#app/interfaces/products/product.type";
+import type { QueryFilter } from "#app/interfaces/search/queryFilter.type";
 
-export function createProduct(
+import * as productRepository from "#app/modules/products/product.repository";
+
+export function create(
   sellerId: number,
   title: string,
   description: string,
   price: number,
   stock: number,
 ): Promise<Product | null> {
-  return productRepository.createProduct(
-    sellerId,
-    title,
-    description,
-    price,
-    stock,
-  );
+  return productRepository.create(sellerId, title, description, price, stock);
 }
 
-export function getProducts(
+export function getMany(
   filters: QueryFilter,
 ): Promise<PaginatedResult<Product>> {
-  return productRepository.getProducts(filters);
+  return productRepository.getMany(filters);
 }
 
-export function getProduct(id: number): Promise<Product | null> {
-  return productRepository.getProduct(id);
+export function get(id: number): Promise<Product | null> {
+  return productRepository.get(id);
 }
 
-export function getProductOwner(id: number): Promise<number | null> {
-  return productRepository.getProductOwner(id);
+export function getOwner(id: number): Promise<number | null> {
+  return productRepository.getOwner(id);
 }
 
-export function changeProduct(
+export function change(
   id: number,
   userId: number,
   title?: string,
@@ -41,19 +36,25 @@ export function changeProduct(
   price?: number,
   stock?: number,
 ): Promise<boolean> {
-  return productRepository.changeProduct(
-    id,
-    userId,
-    title,
-    description,
-    price,
-    stock,
-  );
+  return productRepository.change(id, userId, title, description, price, stock);
 }
 
-export async function deleteProduct(
-  id: number,
+export function remove(id: number, userId: number): Promise<boolean> {
+  return productRepository.remove(id, userId);
+}
+
+export function changeStock(
   userId: number,
-): Promise<boolean> {
-  return productRepository.deleteProduct(id, userId);
+  productId: number,
+  newStock: number,
+) {
+  return productRepository.changeStock(userId, productId, newStock);
+}
+
+export function decreaseStock(productId: number, quantity: number) {
+  return productRepository.decreaseStock(productId, quantity);
+}
+
+export function increaseStock(productId: number, quantity: number) {
+  return productRepository.increaseStock(productId, quantity);
 }
