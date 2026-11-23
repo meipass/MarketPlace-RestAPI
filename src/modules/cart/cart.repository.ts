@@ -2,6 +2,7 @@ import { db } from "#app/db/db";
 import { eq } from "drizzle-orm";
 import { carts } from "#app/db/schema/cart.schema";
 import { cartItems } from "#app/db/schema/cartItems.schema";
+import { productsTable } from "#app/db/schema/products.schema";
 
 export async function create(customerId: number) {
   const [cart] = await db
@@ -31,4 +32,16 @@ export async function add(
     productId,
     productQuantity,
   });
+}
+
+export async function getItems(cartId: number) {
+  return await db
+    .select({
+      id: cartItems.id,
+      quantity: cartItems.productQuantity,
+      product: productsTable,
+    })
+    .from(cartItems)
+    .innerJoin(productsTable, eq(cartItems.productId, productsTable.id))
+    .where(eq(cartItems.cartId, cartId));
 }
