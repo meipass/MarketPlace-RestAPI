@@ -1,7 +1,7 @@
 import { AppError } from "#app/modules/appError/appError.class";
 import { db } from "#app/db/db";
 
-import type { Tokens } from "#app/interfaces/tokens.type";
+import type { Tokens } from "#app/interfaces/tokens/tokens.type";
 
 import * as bcrypt from "bcrypt";
 import * as tokenService from "#app/modules/tokens/tokens.service";
@@ -106,6 +106,7 @@ export async function logOutUser(refreshToken: string) {
 
 export async function refreshUserTokens(refreshToken: string): Promise<Tokens> {
   const rotateResult = await tokenService.rotateRefreshToken(refreshToken);
+
   const accessToken = tokenService.generateAccessToken({
     userId: rotateResult.userId,
   });

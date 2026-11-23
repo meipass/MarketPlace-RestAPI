@@ -28,7 +28,7 @@ export async function loginController(req: Request, res: Response) {
 }
 
 export async function logOutController(req: Request, res: Response) {
-  const refreshToken = req.cookies?.refreshToken;
+  const refreshToken = req.cookies.refreshToken!;
 
   await authService.logOutUser(refreshToken);
 
@@ -36,14 +36,10 @@ export async function logOutController(req: Request, res: Response) {
 }
 
 export async function refreshTokenController(req: Request, res: Response) {
-  const { refreshToken } = req.body;
-  if (!refreshToken) {
-    return res.status(400).json({
-      message: "Refresh token is required",
-    });
-  }
+  const refreshToken = req.cookies.refreshToken!;
 
-  const result = await authService.refreshUserTokens(refreshToken);
+  const tokens = await authService.refreshUserTokens(refreshToken);
+  setAuthCookies(res, tokens);
 
-  return res.status(200).json(result);
+  return res.sendStatus(200);
 }

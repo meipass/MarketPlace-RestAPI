@@ -6,8 +6,8 @@ import { isNonEmptyString } from "#app/validators/isNonEmptyString.validator";
 import { isValidPassword } from "#app/validators/isValidPassword.validator";
 import { isValidLogin } from "#app/validators/isValidLogin.validator";
 
-import type { RegisterData } from "#app/interfaces/registerData.type";
-import type { LoginData } from "#app/interfaces/loginData.type";
+import type { RegisterData } from "#app/interfaces/auth/registerData.type";
+import type { LoginData } from "#app/interfaces/auth/loginData.type";
 
 export function validateRegistrationBody(body: unknown): RegisterData {
   if (!isObject(body)) {

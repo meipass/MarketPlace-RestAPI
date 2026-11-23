@@ -28,12 +28,27 @@ export function logOutMiddleware(
   res: Response,
   next: NextFunction,
 ) {
-  if (!isNonEmptyString(req.cookies?.refresh)) {
+  if (!isNonEmptyString(req.cookies?.refreshToken)) {
     res.status(401).json({
       status: "error",
       message: "UNAUTHORIZED",
     });
     return;
+  }
+
+  next();
+}
+
+export function refreshTokenMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  if (!isNonEmptyString(req.cookies?.refreshToken)) {
+    res.status(401).json({
+      status: "error",
+      message: "UNAUTHORIZED",
+    });
   }
 
   next();

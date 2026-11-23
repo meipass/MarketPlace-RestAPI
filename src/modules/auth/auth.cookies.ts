@@ -1,5 +1,5 @@
 import { ACCESS_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from "#app/config";
-import type { Tokens } from "#app/interfaces/tokens.type";
+import type { Tokens } from "#app/interfaces/tokens/tokens.type";
 import type { Response } from "express";
 
 export function setAuthCookies(res: Response, tokens: Tokens) {
