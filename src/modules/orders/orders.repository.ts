@@ -8,7 +8,8 @@ import type { NewOrder } from "#app/interfaces/orders/newOrder.type";
 import type { NewOrderItem } from "#app/interfaces/orders/newOrderItem.type";
 import type { Order } from "#app/interfaces/orders/order.type";
 import type { Transaction } from "#app/interfaces/transaction.type";
-import { eq } from "node_modules/drizzle-orm/index.js";
+
+import { eq } from "drizzle-orm";
 
 export async function create(
   data: NewOrder,
