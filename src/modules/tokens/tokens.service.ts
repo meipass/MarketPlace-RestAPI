@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
-import type { RotateRefreshTokenResult } from "#app/interfaces/rotateRefreshTokenResult.type";
-import type { AuthPayload } from "#app/interfaces/authPayload.type";
+import type { RotateRefreshTokenResult } from "#app/interfaces/tokens/rotateRefreshTokenResult.type";
+import type { AuthPayload } from "#app/interfaces/auth/authPayload.type";
 import type { Transaction } from "#app/interfaces/transaction.type";
 import { AppError } from "#app/modules/appError/appError.class";
 import { db } from "#app/db/db";
