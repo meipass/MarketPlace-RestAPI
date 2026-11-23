@@ -1,8 +1,8 @@
 import { db } from "#app/db/db";
 import { usersTable } from "#app/db/schema/users.schema";
-import type { AuthUser } from "#app/interfaces/authUser.type";
+import type { AuthUser } from "#app/interfaces/auth/authUser.type";
 import type { Transaction } from "#app/interfaces/transaction.type";
-import type { User } from "#app/interfaces/user.type";
+import type { User } from "#app/interfaces/user/user.type";
 import { eq } from "drizzle-orm";
 
 export async function findByLogin(
@@ -79,7 +79,22 @@ export async function create(
   return userRow?.id ?? null;
 }
 
-export async function getAuthData(
+export async function changePassword(
+  userId: number,
+  newPasswordHash: string,
+): Promise<boolean> {
+  const [isChanged] = await db
+    .update(usersTable)
+    .set({
+      passwordHash: newPasswordHash,
+    })
+    .where(eq(usersTable.id, userId))
+    .returning({ id: usersTable.id });
+
+  return isChanged !== undefined;
+}
+
+export async function getAuthDataByEmail(
   email: string,
   tx?: Transaction,
 ): Promise<AuthUser | null> {
@@ -89,6 +104,20 @@ export async function getAuthData(
     .select()
     .from(usersTable)
     .where(eq(usersTable.email, email));
+
+  return user ?? null;
+}
+
+export async function getAuthDataById(
+  userId: number,
+  tx?: Transaction,
+): Promise<AuthUser | null> {
+  const client = tx ?? db;
+
+  const [user] = await client
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, userId));
 
   return user ?? null;
 }

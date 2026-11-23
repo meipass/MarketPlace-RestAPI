@@ -17,3 +17,27 @@ export async function getMyProfileController(req: Request, res: Response) {
     user,
   });
 }
+
+export async function changePasswordController(req: Request, res: Response) {
+  const userId = req.userId!;
+  const { oldPassword, newPassword } = req.body;
+
+  const isChanged = await userService.changePassword(
+    userId,
+    oldPassword,
+    newPassword,
+  );
+  if (!isChanged) {
+    res.status(409).json({
+      status: "error",
+      message: "PASSWORD_CHANGE_CONFLICT",
+    });
+
+    return;
+  }
+
+  return res.status(200).json({
+    status: "success",
+    message: "PASSWORD_CHANGE_SUCCESS",
+  });
+}

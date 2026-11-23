@@ -1,16 +1,17 @@
 import type { Request, Response, NextFunction } from "express";
-import { isValidInteger } from "#app/validators/isValidNumber.validator";
+import { isValidPassword } from "#app/validators/isValidPassword.validator";
 
-export function getMyProfileMiddleware(
+export function changePasswordMiddleware(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  const isValidUserId = isValidInteger(req.userId);
-  if (!isValidUserId) {
-    res.status(404).json({
+  const { oldPassword, newPassword } = req.body;
+
+  if (!isValidPassword(oldPassword) || !isValidPassword(newPassword)) {
+    res.status(422).json({
       status: "error",
-      message: "INVALID_USER",
+      message: "INVALID_CREDENTIALS",
     });
 
     return;
