@@ -8,10 +8,6 @@ const router = Router();
 
 router.use(requireAuth);
 
-router.get(
-  "/",
-  cartMiddleware.getCartItemsMiddleware,
-  cartController.getCartItemsController,
-);
+router.get("/", cartController.getCartItemsController);
 
 export default router;

@@ -2,6 +2,14 @@ import { AppError } from "#app/modules/appError/appError.class";
 
 import * as cartRepository from "./cart.repository.js";
 
+export function create(customerId: number) {
+  return cartRepository.create(customerId);
+}
+
+export function getByUserId(customerId: number) {
+  return cartRepository.getByUserId(customerId);
+}
+
 export async function add(
   cartId: number,
   productId: number,
@@ -17,14 +25,6 @@ export async function findOrCreateCart(userId: number) {
   }
 
   return cart;
-}
-
-export function create(customerId: number) {
-  return cartRepository.create(customerId);
-}
-
-export function getByUserId(customerId: number) {
-  return cartRepository.getByUserId(customerId);
 }
 
 export async function addByUserId(
