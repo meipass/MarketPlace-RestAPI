@@ -18,7 +18,6 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "paths": {
-        "*": ["./*"],
         "#app/*": ["./src/*"]
     }
     // Other Outputs
