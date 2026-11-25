@@ -1,9 +1,10 @@
 import { db } from "#app/db/db";
+import { eq } from "drizzle-orm";
 import { usersTable } from "#app/db/schema/users.schema";
+
 import type { AuthUser } from "#app/interfaces/auth/authUser.type";
 import type { Transaction } from "#app/interfaces/transaction.type";
 import type { User } from "#app/interfaces/user/user.type";
-import { eq } from "drizzle-orm";
 
 export async function findByLogin(
   login: string,
@@ -78,22 +79,6 @@ export async function create(
 
   return userRow?.id ?? null;
 }
-
-export async function changePassword(
-  userId: number,
-  newPasswordHash: string,
-): Promise<boolean> {
-  const [isChanged] = await db
-    .update(usersTable)
-    .set({
-      passwordHash: newPasswordHash,
-    })
-    .where(eq(usersTable.id, userId))
-    .returning({ id: usersTable.id });
-
-  return isChanged !== undefined;
-}
-
 export async function getAuthDataByEmail(
   email: string,
   tx?: Transaction,
@@ -120,4 +105,57 @@ export async function getAuthDataById(
     .where(eq(usersTable.id, userId));
 
   return user ?? null;
+}
+
+export async function getAuthDataByLogin(
+  login: string,
+  tx?: Transaction,
+): Promise<AuthUser | null> {
+  const client = tx ?? db;
+
+  const [user] = await client
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.login, login));
+
+  return user ?? null;
+}
+
+export async function changePassword(
+  userId: number,
+  newPasswordHash: string,
+): Promise<boolean> {
+  const [isChanged] = await db
+    .update(usersTable)
+    .set({ passwordHash: newPasswordHash })
+    .where(eq(usersTable.id, userId))
+    .returning({ id: usersTable.id });
+
+  return isChanged !== undefined;
+}
+
+export async function changeLogin(
+  userId: number,
+  newLogin: string,
+): Promise<boolean> {
+  const [isChanged] = await db
+    .update(usersTable)
+    .set({ login: newLogin })
+    .where(eq(usersTable.id, userId))
+    .returning({ id: usersTable.id });
+
+  return isChanged !== undefined;
+}
+
+export async function changeEmail(
+  userId: number,
+  newEmail: string,
+): Promise<boolean> {
+  const [isChanged] = await db
+    .update(usersTable)
+    .set({ email: newEmail })
+    .where(eq(usersTable.id, userId))
+    .returning({ id: usersTable.id });
+
+  return isChanged !== undefined;
 }

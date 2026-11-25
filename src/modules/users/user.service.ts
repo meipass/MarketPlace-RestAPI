@@ -1,12 +1,11 @@
+import { AppError } from "#app/modules/appError/appError.class";
+
 import type { AuthUser } from "#app/interfaces/auth/authUser.type";
 import type { Transaction } from "#app/interfaces/transaction.type";
 import type { User } from "#app/interfaces/user/user.type";
 
 import bcrypt from "bcrypt";
-
 import * as userRepository from "./user.repository.js";
-import { AppError } from "../appError/appError.class.js";
-import { db } from "#app/db/db";
 
 export function create(
   email: string,
@@ -45,6 +44,13 @@ export function getAuthDataByEmail(
   return userRepository.getAuthDataByEmail(email, tx);
 }
 
+export function getAuthDataByLogin(
+  login: string,
+  tx?: Transaction,
+): Promise<AuthUser | null> {
+  return userRepository.getAuthDataByLogin(login, tx);
+}
+
 export function getAuthDataById(
   userId: number,
   tx?: Transaction,
@@ -77,4 +83,28 @@ export async function changePassword(
   const newPasswordHash = await bcrypt.hash(newPassword, 10);
 
   return userRepository.changePassword(userId, newPasswordHash);
+}
+
+export async function changeLogin(
+  userId: number,
+  newLogin: string,
+): Promise<boolean> {
+  const authData = await getAuthDataById(userId);
+  if (!authData) {
+    throw new AppError("INVALID_USER_ID");
+  }
+
+  return userRepository.changeLogin(userId, newLogin);
+}
+
+export async function changeEmail(
+  userId: number,
+  newEmail: string,
+): Promise<boolean> {
+  const authData = await getAuthDataById(userId);
+  if (!authData) {
+    throw new AppError("INVALID_USER_ID");
+  }
+
+  return userRepository.changeLogin(userId, newEmail);
 }

@@ -1,9 +1,9 @@
 import { AppError } from "#app/modules/appError/appError.class";
-import { db } from "#app/db/db";
-
 import type { Tokens } from "#app/interfaces/tokens/tokens.type";
 
-import * as bcrypt from "bcrypt";
+import { db } from "#app/db/db";
+
+import bcrypt from "bcrypt";
 import * as tokenService from "#app/modules/tokens/tokens.service";
 import * as userService from "#app/modules/users/user.service";
 
@@ -46,10 +46,10 @@ export async function registerUser(
 }
 
 export async function loginUser(
-  email: string,
+  login: string,
   password: string,
 ): Promise<Tokens> {
-  const authUser = await userService.getAuthData(email);
+  const authUser = await userService.getAuthDataByLogin(login);
   if (!authUser) {
     throw new AppError("INVALID_CREDENTIALS");
   }
@@ -63,10 +63,11 @@ export async function loginUser(
   }
 
   const userId = authUser.id;
+
   const accessToken = tokenService.generateAccessToken({ userId: userId });
   const refreshToken = tokenService.generateRefreshToken();
 
-  const refreshTokenHash = await bcrypt.hash(refreshToken);
+  const refreshTokenHash = tokenService.hashRefreshToken(refreshToken);
 
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 30);
