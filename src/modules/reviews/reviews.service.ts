@@ -10,10 +10,14 @@ export function remove(userId: number, reviewId: number) {
   return reviewRepository.remove(userId, reviewId);
 }
 
-export function findById(reviewId: number) {
-  return reviewRepository.findById(reviewId);
+export function getById(reviewId: number) {
+  return reviewRepository.getById(reviewId);
 }
 
-export function findByUserId(userId: number, page: number, limit: number) {
-  return reviewRepository.findByUserId(userId, page, limit);
+export function getByUserId(userId: number, page: number, limit: number) {
+  return reviewRepository.getByUserId(userId, page, limit);
+}
+
+export function getByProductId(productId: number, page: number, limit: number) {
+  return reviewRepository.getByProductId(productId, page, limit);
 }
