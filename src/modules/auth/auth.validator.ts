@@ -52,9 +52,9 @@ export function validateLoginBody(body: unknown): LoginData {
     throw new AppError("INVALID_BODY");
   }
 
-  const { email, password } = body;
+  const { login, password } = body;
 
-  if (!isNonEmptyString(email)) {
+  if (!isNonEmptyString(login)) {
     throw new AppError("EMAIL_REQUIRED");
   }
 
@@ -62,12 +62,12 @@ export function validateLoginBody(body: unknown): LoginData {
     throw new AppError("PASSWORD_REQUIRED");
   }
 
-  if (!isValidEmail(email)) {
+  if (!isValidLogin(login)) {
     throw new AppError("INVALID_EMAIL");
   }
 
   return {
-    email: email,
+    login: login,
     password: password,
   };
 }
