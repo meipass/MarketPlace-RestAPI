@@ -18,8 +18,8 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "paths": {
-        "#app/*": ["./src/*"]
-    }
+      "#app/*": ["./src/*"]
+    },
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
@@ -44,7 +44,7 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
 
   "include": ["src/**/*.ts"]

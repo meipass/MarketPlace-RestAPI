@@ -1,5 +1,5 @@
-import type { LoginData } from "../loginData.type.jspe.js";
+import type { LoginData } from "./loginData.type.js";
 
 export interface RegisterData extends LoginData {
-  login: string;
+  email: string;
 }
