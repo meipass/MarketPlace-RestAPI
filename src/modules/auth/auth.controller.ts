@@ -24,7 +24,9 @@ export async function loginController(req: Request, res: Response) {
     return res.status(401).json("UNAUTHORIZED");
   }
 
-  return res.sendStatus(201);
+  setAuthCookies(res, tokens);
+
+  return res.sendStatus(200);
 }
 
 export async function logOutController(req: Request, res: Response) {

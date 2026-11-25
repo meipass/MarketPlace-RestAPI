@@ -13,19 +13,19 @@ export async function registerUser(
   password: string,
 ): Promise<Tokens> {
   const result = await db.transaction(async (tx) => {
-    const isAlreadyTakenLogin = await userService.findByLogin(login);
+    const isAlreadyTakenLogin = await userService.findByLogin(login, tx);
     if (isAlreadyTakenLogin) {
       throw new AppError("INVALID_CREDENTIALS");
     }
 
-    const isAlreadyTakenEmail = await userService.findByEmail(email);
+    const isAlreadyTakenEmail = await userService.findByEmail(email, tx);
     if (isAlreadyTakenEmail) {
       throw new AppError("INVALID_CREDENTIALS");
     }
 
     const passwordHashed = await bcrypt.hash(password, 10);
 
-    const userId = await userService.create(email, login, passwordHashed);
+    const userId = await userService.create(email, login, passwordHashed, tx);
     if (!userId) {
       throw new AppError("UNKNOWN_SERVER_ERROR");
     }
@@ -90,7 +90,7 @@ export async function logOutUser(refreshToken: string) {
   const hashedRefreshToken = tokenService.hashRefreshToken(refreshToken);
 
   await db.transaction(async (tx) => {
-    const userId = tokenService.findRefreshToken(hashedRefreshToken, tx);
+    const userId = await tokenService.findRefreshToken(hashedRefreshToken, tx);
     if (!userId) {
       throw new AppError("INVALID_TOKEN");
     }
