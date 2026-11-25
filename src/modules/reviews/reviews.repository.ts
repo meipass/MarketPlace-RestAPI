@@ -68,7 +68,8 @@ export async function getByProductId(
     .from(reviews)
     .where(eq(reviews.productId, productId))
     .limit(limit)
-    .offset((page - 1) * limit);
+    .offset((page - 1) * limit)
+    .orderBy(reviews.id);
 
   const [totalRows] = await db
     .select({ count: count() })
