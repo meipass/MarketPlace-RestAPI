@@ -15,6 +15,11 @@ export async function create(req: Request<{ id: string }>, res: Response) {
   };
 
   await reviewService.create(review);
+
+  return res.status(201).json({
+    status: "success",
+    message: "REVIEW_CREATED",
+  });
 }
 
 export async function getByProductId(
