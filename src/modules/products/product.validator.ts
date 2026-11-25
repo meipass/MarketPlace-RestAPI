@@ -10,41 +10,10 @@ import { isObject } from "#app/validators/isObject.validator";
 import { isValidInteger } from "#app/validators/isValidNumber.validator";
 import { isNonEmptyString } from "#app/validators/isNonEmptyString.validator";
 import { AppError } from "#app/modules/appError/appError.class";
-
-export function parsePositiveInteger(
-  value: unknown,
-  defaultValue: number,
-  max?: number,
-): number | null {
-  if (value === undefined) return defaultValue;
-  if (typeof value !== "string" || value.trim() === "") return null;
-
-  const parsed = Number(value);
-
-  if (!Number.isSafeInteger(parsed) || parsed <= 0) return null;
-  if (max !== undefined && parsed > max) return null;
-
-  return parsed;
-}
-
-function parsePrice(value: unknown): number | null | undefined {
-  if (value === undefined) return null;
-  if (typeof value !== "string" || value.trim() === "") return null;
-
-  const parsed = Number(value);
-
-  if (!Number.isFinite(parsed) || parsed < 0) return null;
-
-  return parsed;
-}
-
-function isSortBy(value: unknown): value is SortBy {
-  return value === "title" || value === "price";
-}
-
-function isSortOrder(value: unknown): value is SortOrder {
-  return value === "asc" || value === "desc";
-}
+import { parsePositiveInteger } from "#app/utils/parsePositiveInteger.util";
+import { parsePrice } from "#app/utils/parsePrice.util";
+import { isSortBy } from "#app/validators/isSortBy.validator";
+import { isSortOrder } from "#app/validators/isSortOrder.validator";
 
 export function validateFilters(query: unknown): QueryFilter {
   if (!isObject(query)) {
