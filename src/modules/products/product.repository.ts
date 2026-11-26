@@ -1,36 +1,21 @@
 import { db } from "#app/db/db";
 import { productsTable } from "#app/db/schema/products.schema";
 import { and, asc, count, desc, eq, gte, ilike, lte, sql } from "drizzle-orm";
+
 import type { QueryFilter } from "#app/interfaces/search/queryFilter.type";
 import type { PaginatedResult } from "#app/interfaces/search/paginatedResult.type";
 import type { Product } from "#app/interfaces/products/product.type";
+import type { NewProduct } from "#app/interfaces/products/newProduct.type";
 
 export async function create(
-  sellerId: number,
-  title: string,
-  description: string,
-  price: number,
-  stock: number,
+  data: NewProduct,
+  // sellerId: number,
+  // title: string,
+  // description: string,
+  // price: number,
+  // stock: number,
 ): Promise<Product | null> {
-  const [product] = await db
-    .insert(productsTable)
-    .values({
-      sellerId,
-      title,
-      description,
-      price,
-      stock,
-    })
-    .returning({
-      id: productsTable.id,
-      sellerId: productsTable.sellerId,
-      title: productsTable.title,
-      description: productsTable.description,
-      price: productsTable.price,
-      stock: productsTable.stock,
-      updatedAt: productsTable.updatedAt,
-      createdAt: productsTable.createdAt,
-    });
+  const [product] = await db.insert(productsTable).values(data).returning();
 
   return product ?? null;
 }

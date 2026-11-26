@@ -1,23 +1,27 @@
 import type { Response, Request } from "express";
+
 import type { QueryFilter } from "#app/interfaces/search/queryFilter.type";
+import type { NewProduct } from "#app/interfaces/products/newProduct.type";
 
 import * as productService from "./product.service.js";
 
 export async function createProductController(req: Request, res: Response) {
   const { title, description, price, stock } = req.body;
 
-  const product = await productService.create(
-    req.userId!,
+  const newProduct: NewProduct = {
+    sellerId: req.userId!,
     title,
     description,
     price,
     stock,
-  );
+  };
+
+  const product = await productService.create(newProduct);
 
   return res.status(201).json(product);
 }
 
-export async function getProductsController(req: Request, res: Response) {
+export async function getProductsController(_: unknown, res: Response) {
   const queryFilter = res.locals.productFilters as QueryFilter;
   const products = await productService.getMany(queryFilter);
 

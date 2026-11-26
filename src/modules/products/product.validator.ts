@@ -1,3 +1,5 @@
+import { AppError } from "#app/modules/appError/appError.class";
+
 import type {
   QueryFilter,
   SortBy,
@@ -9,7 +11,6 @@ import type { ProductData } from "#app/interfaces/products/productData.type";
 import { isObject } from "#app/validators/isObject.validator";
 import { isValidInteger } from "#app/validators/isValidNumber.validator";
 import { isNonEmptyString } from "#app/validators/isNonEmptyString.validator";
-import { AppError } from "#app/modules/appError/appError.class";
 import { parsePositiveInteger } from "#app/utils/parsePositiveInteger.util";
 import { parsePrice } from "#app/utils/parsePrice.util";
 import { isSortBy } from "#app/validators/isSortBy.validator";

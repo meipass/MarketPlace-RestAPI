@@ -1,17 +1,12 @@
 import type { PaginatedResult } from "#app/interfaces/search/paginatedResult.type";
 import type { Product } from "#app/interfaces/products/product.type";
 import type { QueryFilter } from "#app/interfaces/search/queryFilter.type";
+import type { NewProduct } from "#app/interfaces/products/newProduct.type";
 
 import * as productRepository from "#app/modules/products/product.repository";
 
-export function create(
-  sellerId: number,
-  title: string,
-  description: string,
-  price: number,
-  stock: number,
-): Promise<Product | null> {
-  return productRepository.create(sellerId, title, description, price, stock);
+export function create(data: NewProduct): Promise<Product | null> {
+  return productRepository.create(data);
 }
 
 export function getMany(
