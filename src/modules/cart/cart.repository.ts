@@ -34,14 +34,19 @@ export async function add(
   });
 }
 
-export async function getItems(cartId: number) {
-  return await db
+export async function getItems(cartId: number, page: number, limit: number) {
+  const items = await db
     .select({
       id: cartItems.id,
       quantity: cartItems.productQuantity,
       product: productsTable,
     })
     .from(cartItems)
+    .orderBy(cartItems.id)
     .innerJoin(productsTable, eq(cartItems.productId, productsTable.id))
-    .where(eq(cartItems.cartId, cartId));
+    .where(eq(cartItems.cartId, cartId))
+    .limit(limit)
+    .offset((page - 1) * limit);
+
+  return items;
 }

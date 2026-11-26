@@ -40,11 +40,11 @@ export async function addByUserId(
   await add(cart.id, productId, productQuantity);
 }
 
-export async function getItems(userId: number) {
+export async function getItems(userId: number, page: number, limit: number) {
   const cart = await findOrCreateCart(userId);
   if (!cart) {
     throw new AppError("INVALID_CREDENTIALS");
   }
 
-  return await cartRepository.getItems(cart.id);
+  return cartRepository.getItems(cart.id, page, limit);
 }
