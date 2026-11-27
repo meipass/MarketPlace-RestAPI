@@ -3,11 +3,11 @@ import { usersTable } from "./users.schema.js";
 
 export const tokensTable = pgTable("refreshTokens", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  tokenHash: varchar("token_hash", { length: 255 }).notNull(),
+  tokenHash: varchar("token_hash", { length: 255 }).notNull().unique(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-  revokedAt: timestamp("revoked_at", { withTimezone: true }),
   ownerId: integer("owner_id").references(() => usersTable.id),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
   expiresAt: timestamp("expires_at", { withTimezone: true }),
 });

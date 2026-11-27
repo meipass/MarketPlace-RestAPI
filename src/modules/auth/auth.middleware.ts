@@ -49,6 +49,7 @@ export function refreshTokenMiddleware(
       status: "error",
       message: "UNAUTHORIZED",
     });
+    return;
   }
 
   next();

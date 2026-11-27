@@ -6,6 +6,7 @@ import type { Transaction } from "#app/interfaces/transaction.type";
 export async function saveRefreshToken(
   tokenHash: string,
   ownerId: number,
+  expiresAt: Date,
   tx?: Transaction,
 ): Promise<boolean> {
   const client = tx ?? db;
@@ -15,6 +16,7 @@ export async function saveRefreshToken(
     .values({
       tokenHash,
       ownerId,
+      expiresAt,
     })
     .returning({ id: tokensTable.id });
 

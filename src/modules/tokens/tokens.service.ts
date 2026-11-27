@@ -25,7 +25,10 @@ export function saveRefreshToken(
   ownerId: number,
   tx?: Transaction,
 ): Promise<boolean> {
-  return tokenRepository.saveRefreshToken(tokenHash, ownerId, tx);
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 30);
+
+  return tokenRepository.saveRefreshToken(tokenHash, ownerId, expiresAt, tx);
 }
 
 export function generateRefreshToken(): string {
@@ -75,7 +78,7 @@ export async function rotateRefreshToken(
 
     return {
       userId: userId,
-      newRefreshToken: newHashedToken,
+      newRefreshToken: newToken,
     };
   });
 

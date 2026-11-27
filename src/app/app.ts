@@ -1,4 +1,6 @@
 import express from "express";
+import cookieParser from "cookie-parser";
+
 import "dotenv/config";
 
 import { errorHandler } from "#app/modules/appError/appError.controller";
@@ -10,6 +12,7 @@ import userRoutes from "#app/modules/users/user.routes";
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);

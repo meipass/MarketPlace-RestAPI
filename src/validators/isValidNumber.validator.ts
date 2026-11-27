@@ -6,5 +6,5 @@ export function isValidInteger(value: unknown): value is number {
 
   const number = Number(value);
 
-  return !Number.isNaN(Number) || Number.isSafeInteger(number) || number > 0;
+  return !Number.isNaN(number) || Number.isSafeInteger(number) || number > 0;
 }

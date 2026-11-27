@@ -38,7 +38,7 @@ export async function registerUser(
 
     return {
       access: accessToken,
-      refresh: hashedRefreshToken,
+      refresh: refreshToken,
     };
   });
 
